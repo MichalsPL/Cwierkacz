@@ -1,6 +1,6 @@
 <?php
 
-class comments {
+class Comments {
     
     private $id;
     private $tweetId;
@@ -120,9 +120,8 @@ class comments {
        
        $result= $conn->query($sql);
        if ($result){
-           print'<div  style="margin-top : 5px">';
-             Print 'ćwierknięcie '.$this->getText().' zostalo dodane <br>';
-             
+           print'<div class="form" style="margin-top : 5px">';
+             Print 'ostatnio dadany komentarz to  '.$this->getText().'<br>'; 
              print"</div>"; 
            
        }  else {

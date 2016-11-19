@@ -57,14 +57,11 @@ class User {  // wrzucic w setery real escape string
 
         public function saveToDB(mysqli $conn) {
         if ($this->id == -1) { // zastosowas prepare statements
-            $statement = $conn->prepare("INSERT INTO users(username, hashedPassword, email)
-            VALUES (?,?,?)");
-         //   $sql = "INSERT INTO users(username, hashedPassword, email)
-          //  VALUES ('$this->username', '$this->hashedPassword', '$this->email')";
-           
+            $statement = $conn->prepare("INSERT INTO users(username,
+                hashedPassword, email) VALUES (?,?,?)");           
+            $statement->bind_param('sss', $this->username, $this->
+                    hashedPassword, $this->email);
             
-            
-            $statement->bind_param('sss', $this->username, $this->hashedPassword, $this->email);
             if ($statement->execute()) { //execute wysyla zapytanie do bazy
                 $this->id = $statement->insert_id;
                 return true;

@@ -90,7 +90,7 @@ class Message{
      }
         public function loadSendedMessages($conn, $id){
           $safeid=$conn->real_escape_string($id);
-         $sql="SELECT * FROM messages WHERE reciver_id =  ".($safeid);
+         $sql="SELECT * FROM messages WHERE sender_id =  ".$safeid;
         $result=$conn->query($sql);
         $messages=[];
         if($result !=FALSE &&$result->num_rows>0){
@@ -105,6 +105,8 @@ class Message{
             
             $messages[] = $message;
             }
+        }else{
+            $messages= "BRAK WIADOMOŚCI DO WYŚWIETLENIA ";
         }
          
         return $messages;
@@ -113,7 +115,7 @@ class Message{
      
       public function loadMessagesByMessageId($conn, $id){
          $safeid=$conn->real_escape_string($id);
-         $sql="SELECT * FROM messages WHERE reciver_id =  ".($safeid);
+         $sql="SELECT * FROM messages WHERE id =  ".($safeid);
         $result=$conn->query($sql);        
         $messages=[];
         if($result !=FALSE &&$result->num_rows>0){
@@ -127,6 +129,8 @@ class Message{
              $message->sendDate = $row['send_time'];  
             $messages[] = $message;
             }
+        }else{
+            $messages="Brak Wiadomości";
         }
         return $messages;
      
@@ -149,14 +153,16 @@ class Message{
           $safeGetReciver=$conn->real_escape_string($this->getReciverId());
           $safeGetSenderId=$conn->real_escape_string( $this->getSenderId());
           $safeGetMessage=$conn->real_escape_string($this->getMessage());
-        $sql='INSERT INTO messages ( is_readed, reciver_id, sender_id,  message) '
+        $sql='INSERT INTO messages '
+                . '( is_readed, reciver_id, sender_id,  message) '
                 . 'VALUES('.$safeIsReaded.','.$safeGetReciver.', '
                 .$safeGetSenderId.',"'.$safeGetMessage.'")';
   
        $result= $conn->query($sql);
        if ($result){
            print'<div class="form" style="margin-top : 5px">';
-             Print 'Wiadomośś o treści  '.$this->getMessage().' została dodane <br>';
+             Print 'Wiadomośś o treści  '.$this->getMessage().
+                     ' została dodane <br>';
              
              print"</div>"; 
      }else print $conn->error;
@@ -168,10 +174,14 @@ class Message{
          if (is_object($tabOrObj)){
              print'<div class="form" style="margin-top : 5px">';
                    if($tabOrObj->isReaded==0) print "<strong>" ;
-                   $safeGetSenderId=$conn->real_escape_string( ($tabOrObj->senderId));
+                   $safeGetSenderId=$conn->real_escape_string
+                           ( ($tabOrObj->senderId));
+                   
              Print 'Wiadomość z dnia'.$tabOrObj->sendDate.'<br>';
+             
               $sql= "SELECT username from users WHERE id =".$safeGetSenderId;
               $result=$conn->query($sql);
+              
             if($result !=FALSE &&$result->num_rows==1){
                 while ( $row=$result->fetch_assoc()){
              print "Od ".$row['username'].'<br>';
@@ -201,8 +211,11 @@ class Message{
              print "Od ".$row['username'].'<br>';
              Print 'o początku <br>'.substr($obj->getMessage(),0,30).'<br>';
              if($obj->isReaded==0) print "</strong>";
-           print' <form method="POST"><input type="hidden" name="displayessage" value="'
-             .$obj->getId().'"><button type="submit" name="ShowOneMessage" action="#">zobacz całą wiadomość </button></form>'; 
+           print' <form method="POST"><input type="hidden" '
+             . 'name="displayessage" value="'
+             .$obj->getId().
+                   '"><button type="submit" name="ShowOneMessage" action="#">'
+                   . 'zobacz całą wiadomość </button></form>'; 
                }
             }  
          

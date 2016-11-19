@@ -1,5 +1,5 @@
 <?php
-include_once 'commens.php';
+include_once 'Comments.php';
 
  class Tweet{
      private $id;
@@ -125,11 +125,10 @@ include_once 'commens.php';
   
        $result= $conn->query($sql);
        if ($result){
-           print'<div class="form" style="margin-top : 5px">';
-             Print 'ćwierknięcie '.$this->getText().' zostalo dodane <br>';
-             
+             print'<div class="form" style="margin-top : 5px">';
+             Print 'ostatnio dodane ćwierknięcie '.$this->getText().' <br>';
              print"</div>"; 
-           
+             $_POST['tweet']="";
        }
          
      }
@@ -150,7 +149,7 @@ include_once 'commens.php';
                 }
                 print '   <form method="POST"><button type="submit" name="CheckTweet" '
                 . 'value="'.$obj->id.'"action="#">szczegoly tweeta</button></form>'; 
-                $comm = comments:: loadCommentsByTweetId($conn, $obj->id);
+                $comm = Comments:: loadCommentsByTweetId($conn, $obj->id);
                 print "ilość komentarzy do tego tweeta to <br>". count($comm);
                 print"</div>"; 
          }
@@ -161,19 +160,22 @@ include_once 'commens.php';
              print'<div class="form" style="margin-top : 5px">';
              Print 'ćwierknięcie z dnia'.$obj->creationDate.'<br>';
              Print 'o treści<br>'.$obj->text.'<br>';
+            
              $safeuserid=$conn->real_escape_string($obj->userid);
              $sql= "SELECT username from users WHERE id =".$safeuserid;
-            $result=$conn->query($sql);
-             if($result !=FALSE &&$result->num_rows==1){
-                while ( $row=$result->fetch_assoc()){
-              print "opublikowane przez ".$row['username'];              
-                }
-             print '   <form method="POST"><button type="submit" name="CheckTweet" '
-                . 'value="'.$obj->id.'"action="#">szczegoly tweeta</button></form>'; 
-            $comm = comments:: loadCommentsByTweetId($conn, $obj->id);
-            print "ilość komentarzy do tego tweeta to <br>" . count($comm);
-            print"</div>"; 
-            }
+             $result=$conn->query($sql);
+                  if($result !=FALSE &&$result->num_rows==1){
+                    while ( $row=$result->fetch_assoc()){
+                     print "opublikowane przez ".$row['username'];              
+                     }
+                    print '   <form method="POST"><button type="submit" name="CheckTweet" '
+                       . 'value="'.$obj->id.'"action="#">szczegoly tweeta</button></form>'; 
+                    
+                   $comm = comments:: loadCommentsByTweetId($conn, $obj->id);
+
+                   print "ilość komentarzy do tego tweeta to <br>" . count($comm);
+                   print"</div>"; 
+                   }
          
          }
      }  
@@ -194,30 +196,25 @@ include_once 'commens.php';
              $safeuserid=$conn->real_escape_string($tabOrObj->userid);
              $sql= "SELECT username from users WHERE id =".$safeuserid;
             $result=$conn->query($sql);
+            
             if($result !=FALSE &&$result->num_rows==1){
                 while ( $row=$result->fetch_assoc()){
-             print "opublikowane przez ".$row['username'].'<br>';
-             print '   <form method="POST"><input type="hidden" '
-             . 'name="TweetCreator" value="'.$tabOrObj->userid.'"><button type="submit" name="createMessage" '
+                print "opublikowane przez ".$row['username'].'<br>';
+                print '   <form method="POST"><input type="hidden" '
+                . 'name="TweetCreator" value="'.$tabOrObj->userid.'"><button type="submit" name="createMessage" '
                 . 'action="#">Wyślij wiadomość do właściciela</button></form>'; 
+                
               print'        
-      <form class="login-formComment" method="POST">
-      <input type="text" name="comment" placeholder="Twój komentarz" maxlength="40"> 
-      <input type="hidden" name="CheckTweet" style="display: none" value="'.$tabOrObj->id.'"> 
-      <button type="submit">Ćwerknij komentarz</button>
-    </form>
- ';
+                <form class="login-formComment" method="POST">
+                <input type="text" name="comment" placeholder="Twój komentarz" maxlength="40"> 
+                <input type="hidden" name="CheckTweet" style="display: none" value="'.$tabOrObj->id.'"> 
+                <button type="submit">Ćwerknij komentarz</button>
+              </form>';
                }
+               
         $comm = comments:: loadCommentsByTweetId($conn, $tabOrObj->id);
-       $temp= new comments();
-      $temp->displayCommentsOnPage($comm, $conn);    
-     
-    
-   if (isset($_POST['comment'])&& $_POST['comment']!=""
-           && isset($_POST['postId'])&& $_POST['postId']!=""){
-    $temp->createNewComment($_POST['comment'], $_SESSION['userId'], $obj->id);
-    $temp->saveCommentToDB($conn);
-    }  
+        $temp= new comments();
+        $temp->displayCommentsOnPage($comm, $conn);    
              print"</div>"; 
             }
     
@@ -229,6 +226,7 @@ include_once 'commens.php';
              $safeuserid=$conn->real_escape_string($obj->userid);
              $sql= "SELECT username from users WHERE id =".$safeuserid;
             $result=$conn->query($sql);
+            
              if($result !=FALSE &&$result->num_rows==1){
                    while ( $row=$result->fetch_assoc()){
              print "opublikowane przez ".$row['username'].'<br>';
@@ -249,12 +247,7 @@ include_once 'commens.php';
       $temp->displayCommentsOnPage($comm, $conn);    
      
     
-   if (isset($_POST['comment'])&& $_POST['comment']!=""
-           && isset($_POST['postId'])&& $_POST['postId']!=""){
-    $temp->createNewComment($_POST['comment'], $_SESSION['userId'], $obj->id);
-    $temp->saveCommentToDB($conn);
-   }
-            
+    
           print'  
                  
       <form class="login-formComment" method="POST">
@@ -269,8 +262,7 @@ include_once 'commens.php';
             }
          
          }
-         }  
-// 
+         }   
      }
  }
 }

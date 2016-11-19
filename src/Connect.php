@@ -28,6 +28,3 @@ function closeConnection($conn){
     $conn=null;
     }
 }
-
-
-
