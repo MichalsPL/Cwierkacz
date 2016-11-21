@@ -153,7 +153,7 @@ class Message{
           $safeGetReciver=$conn->real_escape_string($this->getReciverId());
           $safeGetSenderId=$conn->real_escape_string( $this->getSenderId());
           $safeGetMessage=$conn->real_escape_string($this->getMessage());
-        $sql='INSERT INTO messages '
+          $sql='INSERT INTO messages '
                 . '( is_readed, reciver_id, sender_id,  message) '
                 . 'VALUES('.$safeIsReaded.','.$safeGetReciver.', '
                 .$safeGetSenderId.',"'.$safeGetMessage.'")';
@@ -162,9 +162,7 @@ class Message{
        if ($result){
            print'<div class="form" style="margin-top : 5px">';
              Print 'Wiadomośś o treści  '.$this->getMessage().
-                     ' została dodane <br>';
-             
-             print"</div>"; 
+                     ' została dodane <br></div>'; 
      }else print $conn->error;
 
   }
